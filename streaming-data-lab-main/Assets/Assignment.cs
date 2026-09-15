@@ -7,6 +7,7 @@ pixel RPG characters created by Sean Browning.
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 
 #region Assignment Instructions
@@ -75,9 +76,38 @@ static public class AssignmentPart1
 
     static public void SavePartyButtonPressed()
     {
+
+        string saveDirectory = Path.Combine(Directory.GetCurrentDirectory(), "saves");
+        // https://learn.microsoft.com/en-us/dotnet/api/system.io.path.combine?view=net-10.0
+        // https://learn.microsoft.com/en-us/dotnet/api/system.io.directory.getcurrentdirectory?view=net-10.0 pretty cool stuff!!!
+
+        Directory.CreateDirectory(saveDirectory);
+        // https://learn.microsoft.com/en-us/dotnet/api/system.io.directory.createdirectory?view=net-10.0
+
+        int characterNum = 1;
+
         foreach (PartyCharacter pc in GameContent.partyCharacters)
         {
-            Debug.Log("PC class id == " + pc.classID);
+           
+            string saveFilePath = Path.Combine(saveDirectory, "Character_" + characterNum + ".txt");
+            characterNum++;
+
+            using (StreamWriter inFile = new StreamWriter(saveFilePath))
+            {
+
+                inFile.WriteLine(pc.classID);
+                inFile.WriteLine(pc.health);
+                inFile.WriteLine(pc.mana);
+                inFile.WriteLine(pc.strength);
+                inFile.WriteLine(pc.agility);
+                inFile.WriteLine(pc.wisdom);
+
+                foreach (int equipmentID in pc.equipment)
+                {
+                    inFile.WriteLine(equipmentID);
+                }
+            }
+
         }
     }
 
@@ -85,12 +115,12 @@ static public class AssignmentPart1
     {
         GameContent.partyCharacters.Clear();
 
-        PartyCharacter pc = new PartyCharacter(1, 10, 10, 10, 10, 10);
-        GameContent.partyCharacters.AddLast(pc);
-        pc = new PartyCharacter(2, 11, 11, 11, 11, 11);
-        GameContent.partyCharacters.AddLast(pc);
-        pc = new PartyCharacter(3, 12, 12, 12, 12, 12);
-        GameContent.partyCharacters.AddLast(pc);
+        //PartyCharacter pc = new PartyCharacter(1, 10, 10, 10, 10, 10);
+        //GameContent.partyCharacters.AddLast(pc);
+        //pc = new PartyCharacter(2, 11, 11, 11, 11, 11);
+        //GameContent.partyCharacters.AddLast(pc);
+        //pc = new PartyCharacter(3, 12, 12, 12, 12, 12);
+        //GameContent.partyCharacters.AddLast(pc);
 
         GameContent.RefreshUI();
     }
