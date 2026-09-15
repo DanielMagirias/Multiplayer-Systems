@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System;
 
 
 #region Assignment Instructions
@@ -113,14 +114,54 @@ static public class AssignmentPart1
 
     static public void LoadPartyButtonPressed()
     {
+
+        string saveDirectory = Path.Combine(Directory.GetCurrentDirectory(), "saves");
+
+        int maxNumOfSaves = 4;
+        int currentSave = 1;
+        PartyCharacter newPc;
         GameContent.partyCharacters.Clear();
 
-        //PartyCharacter pc = new PartyCharacter(1, 10, 10, 10, 10, 10);
-        //GameContent.partyCharacters.AddLast(pc);
-        //pc = new PartyCharacter(2, 11, 11, 11, 11, 11);
-        //GameContent.partyCharacters.AddLast(pc);
-        //pc = new PartyCharacter(3, 12, 12, 12, 12, 12);
-        //GameContent.partyCharacters.AddLast(pc);
+        while (currentSave <= maxNumOfSaves) {
+
+            try
+            {
+
+                string saveFilePath = Path.Combine(saveDirectory, "Character_" + currentSave + ".txt");
+
+                using (StreamReader outFile = new StreamReader(saveFilePath))
+                {
+                    int classID = int.Parse(outFile.ReadLine());
+                    int health = int.Parse(outFile.ReadLine());
+                    int mana = int.Parse(outFile.ReadLine());
+                    int strength = int.Parse(outFile.ReadLine());
+                    int agility = int.Parse(outFile.ReadLine());
+                    int wisdom = int.Parse(outFile.ReadLine());
+
+                    newPc = new PartyCharacter(classID, health, mana, strength, agility, wisdom);
+
+                    string line;
+
+                    while ((line = outFile.ReadLine()) != null)
+                    {
+                        int equipmentID = int.Parse(line);
+                        newPc.equipment.AddLast(equipmentID);
+                    }
+
+                    GameContent.partyCharacters.AddLast(newPc);
+                }
+
+                currentSave++;
+            }
+
+            catch (Exception e)
+            {
+                Debug.Log("File does not exist");
+                break;
+
+            }
+
+        }
 
         GameContent.RefreshUI();
     }
