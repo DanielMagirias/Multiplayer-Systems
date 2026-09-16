@@ -227,20 +227,28 @@ static public class AssignmentPart2
 
         fileNames = new List<string>(Directory.GetFiles(saveDirectory));
 
-        foreach(string fileName in fileNames)
+        //listOfPartyNames.Add("");
+
+        foreach (string fileName in fileNames)
         {
-            fileName.Split("-", 1);
-            
-            foreach(string partName in listOfPartyNames)
+            string[] test = new string[3];
+            test = fileName.Split("--", 3);
+            //Debug.Log(test[1]);
+            listOfPartyNames.Add(test[1]);
+
+            foreach (string partName in listOfPartyNames) //FIX THIS LINE HERE!!!!!PROBLEM IS HERE!!!!
             {
 
-                if (partName == fileName)
-                {
-                    continue;
-                }
+                //if (partName == fileName || partName == "") //maybe use test
+                //{
+                //    listOfPartyNames.Remove(partName);
+                //}
+                Debug.Log(fileName);
             }
-            listOfPartyNames.Add(fileName);
+            
+
         }
+
 
         listOfPartyNames = new List<string>();
 
@@ -276,7 +284,7 @@ static public class AssignmentPart2
         foreach (PartyCharacter pc in GameContent.partyCharacters)
         {
 
-            string saveFilePath = Path.Combine(saveDirectory, partyName + "-Character_" + characterNum + ".txt");
+            string saveFilePath = Path.Combine(saveDirectory, "--" + partyName + "--Character_" + characterNum + ".txt");
             characterNum++;
 
             using (StreamWriter inFile = new StreamWriter(saveFilePath))
