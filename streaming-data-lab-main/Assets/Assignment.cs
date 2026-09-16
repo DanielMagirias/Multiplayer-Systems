@@ -180,7 +180,7 @@ static public class AssignmentPart1
 //  This will enable the needed UI/function calls for your to proceed with your assignment.
 static public class AssignmentConfiguration
 {
-    public const int PartOfAssignmentThatIsInDevelopment = 1;
+    public const int PartOfAssignmentThatIsInDevelopment = 2;
 }
 
 /*
@@ -220,13 +220,29 @@ static public class AssignmentPart2
 {
 
     static List<string> listOfPartyNames;
-
+    static List<string> fileNames;
     static public void GameStart()
     {
+        string saveDirectory = Path.Combine(Directory.GetCurrentDirectory(), "savesP2");
+
+        fileNames = new List<string>(Directory.GetFiles(saveDirectory));
+
+        foreach(string fileName in fileNames)
+        {
+            fileName.Split("-", 1);
+            
+            foreach(string partName in listOfPartyNames)
+            {
+
+                if (partName == fileName)
+                {
+                    continue;
+                }
+            }
+            listOfPartyNames.Add(fileName);
+        }
+
         listOfPartyNames = new List<string>();
-        listOfPartyNames.Add("sample 1");
-        listOfPartyNames.Add("sample 2");
-        listOfPartyNames.Add("sample 3");
 
         GameContent.RefreshUI();
     }
@@ -243,6 +259,44 @@ static public class AssignmentPart2
 
     static public void SavePartyButtonPressed()
     {
+        string partyName = GameContent.GetPartyNameFromInput();
+
+        if (partyName == "")
+        {
+            partyName = "Default";
+        }
+
+        listOfPartyNames.Add(partyName);
+
+        string saveDirectory = Path.Combine(Directory.GetCurrentDirectory(), "savesP2");
+        Directory.CreateDirectory(saveDirectory);
+
+        int characterNum = 1;
+
+        foreach (PartyCharacter pc in GameContent.partyCharacters)
+        {
+
+            string saveFilePath = Path.Combine(saveDirectory, partyName + "-Character_" + characterNum + ".txt");
+            characterNum++;
+
+            using (StreamWriter inFile = new StreamWriter(saveFilePath))
+            {
+
+                inFile.WriteLine(pc.classID);
+                inFile.WriteLine(pc.health);
+                inFile.WriteLine(pc.mana);
+                inFile.WriteLine(pc.strength);
+                inFile.WriteLine(pc.agility);
+                inFile.WriteLine(pc.wisdom);
+
+                foreach (int equipmentID in pc.equipment)
+                {
+                    inFile.WriteLine(equipmentID);
+                }
+            }
+
+        }
+
         GameContent.RefreshUI();
     }
 
