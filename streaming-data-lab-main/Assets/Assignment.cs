@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
+using System.Linq;
 
 
 #region Assignment Instructions
@@ -231,24 +232,42 @@ static public class AssignmentPart2
 
         foreach (string fileName in fileNames)
         {
-            string[] test = new string[3];
-            test = fileName.Split("--", 3);
-            //Debug.Log(test[1]);
-            listOfPartyNames.Add(test[1]);
+            // splitting fileName at "--"
+            // 1: C:\Users\DanMa\Desktop\git\Multiplayer-Systems\streaming-data-lab-main\savesP2\
+            // 2: TEST1 (the chosen party name)
+            // 3: Character_1
 
-            foreach (string partName in listOfPartyNames) //FIX THIS LINE HERE!!!!!PROBLEM IS HERE!!!!
-            {
+            string[] test1 = new string[3];
+            test1 = fileName.Split("--", 3);
+            test1[0] = test1[1];
+            Array.Resize(ref test1, 1);
 
-                //if (partName == fileName || partName == "") //maybe use test
-                //{
-                //    listOfPartyNames.Remove(partName);
-                //}
-                Debug.Log(fileName);
-            }
-            
+
+            listOfPartyNames.Add(test1.ToList());
+           
+      
+
+            //foreach (string partName in listOfPartyNames) //FIX THIS LINE HERE!!!!!PROBLEM IS HERE!!!!
+            //{
+
+            //    if (listOfPartyNames.Contains(partName) || partName == "") //maybe use test
+            //    {
+            //        listOfPartyNames.Remove(partName);
+            //    }
+
+            //    //Debug.Log(partName);
+            //}
+
 
         }
 
+        List<String> a = listOfPartyNames.Distinct().ToList();
+
+
+        foreach (string s in a)
+        {
+            Debug.Log(s);
+        }
 
         listOfPartyNames = new List<string>();
 
@@ -274,7 +293,7 @@ static public class AssignmentPart2
             partyName = "Default";
         }
 
-        listOfPartyNames.Add(partyName);
+        listOfPartyNames.Add(partyName);    
 
         string saveDirectory = Path.Combine(Directory.GetCurrentDirectory(), "savesP2");
         Directory.CreateDirectory(saveDirectory);
