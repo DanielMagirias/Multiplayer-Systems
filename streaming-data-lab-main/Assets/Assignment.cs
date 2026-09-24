@@ -155,7 +155,7 @@ static public class AssignmentPart1
                 currentSave++;
             }
 
-            catch (Exception e)
+            catch (FileNotFoundException)
             {
                 Debug.Log("File does not exist");
                 break;
@@ -225,51 +225,24 @@ static public class AssignmentPart2
     static public void GameStart()
     {
         string saveDirectory = Path.Combine(Directory.GetCurrentDirectory(), "savesP2");
-
         fileNames = new List<string>(Directory.GetFiles(saveDirectory));
 
-        //listOfPartyNames.Add("");
+        listOfPartyNames = new List<string>();
 
         foreach (string fileName in fileNames)
         {
             // splitting fileName at "--"
             // 1: C:\Users\DanMa\Desktop\git\Multiplayer-Systems\streaming-data-lab-main\savesP2\
-            // 2: TEST1 (the chosen party name)
-            // 3: Character_1
+            // 2: party name
+            // 3: Character_CharacterNumber.txt
 
-            string[] test1 = new string[3];
-            test1 = fileName.Split("--", 3);
-            test1[0] = test1[1];
-            Array.Resize(ref test1, 1);
-
-
-            listOfPartyNames.Add(test1.ToList());
-           
-      
-
-            //foreach (string partName in listOfPartyNames) //FIX THIS LINE HERE!!!!!PROBLEM IS HERE!!!!
-            //{
-
-            //    if (listOfPartyNames.Contains(partName) || partName == "") //maybe use test
-            //    {
-            //        listOfPartyNames.Remove(partName);
-            //    }
-
-            //    //Debug.Log(partName);
-            //}
-
+            string[] splitDirectory = fileName.Split("--");
+            string partyName = splitDirectory[1];
+            listOfPartyNames.Add(partyName);
 
         }
 
-        List<String> a = listOfPartyNames.Distinct().ToList();
-
-
-        foreach (string s in a)
-        {
-            Debug.Log(s);
-        }
-
-        listOfPartyNames = new List<string>();
+        listOfPartyNames = listOfPartyNames.Distinct().ToList();
 
         GameContent.RefreshUI();
     }
@@ -281,6 +254,54 @@ static public class AssignmentPart2
 
     static public void LoadPartyDropDownChanged(string selectedName)
     {
+
+        GameContent.partyCharacters.Clear();
+        string saveDirectory = Path.Combine(Directory.GetCurrentDirectory(), "savesP2");
+
+        int maxNumOfCharacter = 4;
+        int currentCharacter = 1;
+        PartyCharacter newPc;
+
+        while (currentCharacter <= maxNumOfCharacter)
+        {
+
+            try
+            {
+                string saveFilePath = Path.Combine(saveDirectory, "--" + selectedName + "--Character_" + currentCharacter + ".txt");
+
+                using (StreamReader outFile = new StreamReader(saveFilePath))
+                {
+                    int classID = int.Parse(outFile.ReadLine());
+                    int health = int.Parse(outFile.ReadLine());
+                    int mana = int.Parse(outFile.ReadLine());
+                    int strength = int.Parse(outFile.ReadLine());
+                    int agility = int.Parse(outFile.ReadLine());
+                    int wisdom = int.Parse(outFile.ReadLine());
+
+                    newPc = new PartyCharacter(classID, health, mana, strength, agility, wisdom);
+
+                    string line;
+
+                    while ((line = outFile.ReadLine()) != null)
+                    {
+                        int equipmentID = int.Parse(line);
+                        newPc.equipment.AddLast(equipmentID);
+                    }
+
+                    GameContent.partyCharacters.AddLast(newPc);
+                }
+
+                currentCharacter++;
+            }
+
+            catch (FileNotFoundException)
+            {
+                //Debug.Log("Character number " + currentCharacter + " for current party doesnt exist");
+                break;
+            }
+
+        }
+
         GameContent.RefreshUI();
     }
 
@@ -327,8 +348,26 @@ static public class AssignmentPart2
         GameContent.RefreshUI();
     }
 
-    static public void DeletePartyButtonPressed()
+    static public void DeletePartyButtonPressed(string partyName)
     {
+
+        string saveDirectory = Path.Combine(Directory.GetCurrentDirectory(), "savesP2");
+
+        int maxNumOfCharacter = 4;
+        int currentCharacter = 1;
+
+        while (currentCharacter <= maxNumOfCharacter)
+        {
+
+            string deletePath = Path.Combine(saveDirectory, "--" + partyName + "--Character_" + currentCharacter + ".txt");
+            File.Delete(deletePath);
+
+            currentCharacter++;
+            
+        }
+
+        listOfPartyNames.Remove(partyName);
+
         GameContent.RefreshUI();
     }
 

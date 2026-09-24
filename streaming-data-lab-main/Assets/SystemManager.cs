@@ -214,7 +214,12 @@ public class SystemManager : MonoBehaviour
 
     public void DeleteButtonPressed()
     {
-        AssignmentPart2.DeletePartyButtonPressed();
+
+        int value = loadPartyDropDown.GetComponent<Dropdown>().value;
+        List<Dropdown.OptionData> selectedName = loadPartyDropDown.GetComponent<Dropdown>().options;
+        string result = selectedName[value].text;
+
+        AssignmentPart2.DeletePartyButtonPressed(result);
     }
 
     public string GetPartyNameFromInput()
